@@ -1,0 +1,2 @@
+hlint -any
+haddock -any
