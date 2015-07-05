@@ -10,13 +10,13 @@ name:                DCFL
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.1.1.0
+version:             0.1.2.0
 
 -- A short (one-line) description of the package.
 synopsis:           Communication Free Learning-based constraint solver
  
 -- A longer description of the package.
-description:         An implementation of Communication Free Learning, a technique used to solve Constraint Satisfcation Problems (CSPs) in a parallelizable manner. The algorithm is described in the paper Decentralized Constraint Satisfaction by Duffy, et. al. (http://arxiv.org/pdf/1103.3240.pdf) and this implementation provides both parallel and serial solvers. 
+description:         An implementation of Communication Free Learning, a technique used to solve Constraint Satisfcation Problems (CSPs) in a parallelizable manner. The algorithm is described in the paper Decentralized Constraint Satisfaction by Duffy, et. al. and this implementation provides both parallel and serial solvers. 
 
 -- URL for the project homepage or repository.
 homepage:            https://github.com/Poincare/DCFL
