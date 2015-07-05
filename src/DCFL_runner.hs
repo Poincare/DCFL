@@ -1,4 +1,4 @@
-import DCFL
+import Data.DCFL
 import Data.List
 
 -- creates the set of variables; n colors possible
@@ -25,31 +25,11 @@ constraintOne values = (values !! 0) + (values !! 1) == 40
 constraintTwo values = 2*(values !! 0) + 3*(values !! 1) == 100
 constraints = [ConstraintEl [0, 1] constraintOne, 
   ConstraintEl [0, 1] constraintTwo]
-
-solve :: [Variable] -> [ConstraintEl] -> IO Solved
-solve vars constraints = do
-  rvars <- updateEachTimes vars constraints 10
-  if checkSolved rvars 
-    then return $ Solved rvars 0
-    else do 
-      solved <- solve rvars constraints
-      return $ Solved (variables solved) ((iterationCount solved) + 1) 
-
-
---main = do
---  rvars <- updateEachTimes vars consts 200
---  putStrLn $ show consts
---  putStrLn $ show rvars
---  putStrLn $ show $ evalConstraint (constraint $ consts !! 0) (getValues rvars)
---  putStrLn $ show $ getValues rvars
---  putStrLn $ show $ sort $ getValues rvars
---    where vars = colorVariables 50
---          consts = colorConstraints 50
-
+  
 main = do
-  rsolved <- solve vars consts
+  rsolved <- solveThreaded 2 vars consts
   putStrLn $ show $ getValues $ variables rsolved
-  where vars = finiteVariables 2 50
+  where vars = finiteVariables 20 100
         consts = constraints
 
 

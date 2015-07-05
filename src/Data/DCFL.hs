@@ -7,9 +7,14 @@
 -- Update it based on whether or not constraints are satisfied
 module Data.DCFL where
 import System.Random
+import Control.Parallel.Strategies
+import Control.DeepSeq
 
 -- |Probability distribution; generally associated with a 'Variable'.
 data Distribution = Distribution {probab::[Double]} deriving Show
+
+instance NFData Distribution where
+  rnf (Distribution probab) = rnf probab
 
 -- |The integer values a 'Variable' can take on.
 data Values = Values [Integer] deriving Show
@@ -18,6 +23,9 @@ data Values = Values [Integer] deriving Show
 -- at a given point and a probability distribution over the set of possible values.
 data Variable = Variable {possible::[Int], valueIndex::Int, 
   distr::Distribution} deriving (Show)
+
+instance NFData Variable where
+  rnf (Variable possible valueIndex distr) = rnf (possible, valueIndex, distr)
 
 -- |Each constraint function ([Int] -> Bool) is associated with a certain set of
 -- variables. 'ConstraintEl' represents this relationship for a constraint
@@ -208,6 +216,37 @@ solve vars constraints = do
     then return $ Solved rvars 0
     else do 
       solved <- solve rvars constraints
-      return $ Solved (variables solved) ((iterationCount solved) + 1) 
-      
+      return $ Solved (variables solved) ((iterationCount solved) + 1)
 
+
+updateMapF :: [Variable] -> [ConstraintEl] -> Int -> IO Variable
+updateMapF variables constraints index = do
+  rvars <- update index variables constraints
+  return (rvars !! index)
+
+-- |Updates each variable in the variable set a number of times and does each
+-- variable's update in a separate thread.
+updateEachThreaded :: Int -> [Variable] -> [ConstraintEl] -> IO [Variable]
+updateEachThreaded numThreads variables constraints = do
+  m <- sequence $ map (updateMapF variables constraints) [0..(length variables)]
+  -- evaluate the map in parallel
+  let mp = m `using` parList rdeepseq in return mp
+
+updateEachTimesThreaded :: Int -> [Variable] -> [ConstraintEl] -> Int -> IO [Variable]
+updateEachTimesThreaded numThreads variables constraints times
+  | times == 0 = return variables
+  | otherwise = do
+    rvars <- updateEachThreaded numThreads variables constraints
+    updateEachTimesThreaded numThreads variables constraints (times - 1)
+
+-- |Solve the constraint set in parallel using Haskell threads. In order for
+-- the solution to be parallelized, the program using DCFL must be compiled
+-- with GHC's '-threaded' option.
+solveThreaded :: Int -> [Variable] -> [ConstraintEl] -> IO Solved
+solveThreaded numThreads vars constraints = do
+  rvars <- updateEachTimesThreaded numThreads vars constraints 10
+  if checkSolved rvars
+    then return $ Solved rvars 0
+    else do
+      solved <- solve rvars constraints
+      return $ Solved (variables solved) ((iterationCount solved) + 1)
