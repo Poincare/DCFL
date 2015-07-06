@@ -1,0 +1,220 @@
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: DownloadFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: DownloadFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: DownloadFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: bytestring-0.10.6.0
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+flags: -integer-simple
+dependencies: integer-gmp-0.5.0.0 ghc-prim-0.3.0.0 deepseq-1.4.1.1
+              base-4.6.0.1
+install-outcome: DownloadFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: cabal-uninstall-0.1.6
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: process-1.2.3.0 mtl-2.1.2 filepath-1.3.0.1
+              directory-1.2.2.1 base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: directory-1.2.2.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: unix-2.7.1.0 time-1.5.0.1 filepath-1.3.0.1
+              base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: process-1.2.3.0
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: unix-2.7.1.0 filepath-1.3.0.1 directory-1.2.2.1
+              deepseq-1.4.1.1 base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: time-1.5.0.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: deepseq-1.4.1.1 base-4.6.0.1
+install-outcome: DownloadFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: unix-2.7.1.0
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: time-1.5.0.1 bytestring-0.10.6.0 base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: bytestring-0.10.6.0
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+flags: -integer-simple
+dependencies: integer-gmp-0.5.0.0 ghc-prim-0.3.0.0 deepseq-1.4.1.1
+              base-4.6.0.1
+install-outcome: BuildFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: cabal-uninstall-0.1.6
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: process-1.2.3.0 mtl-2.1.2 filepath-1.3.0.1
+              directory-1.2.2.1 base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: directory-1.2.2.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: unix-2.7.1.0 time-1.5.0.1 filepath-1.3.0.1
+              base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: process-1.2.3.0
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: unix-2.7.1.0 filepath-1.3.0.1 directory-1.2.2.1
+              deepseq-1.4.1.1 base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: time-1.5.0.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: deepseq-1.4.1.1 base-4.6.0.1
+install-outcome: BuildFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: unix-2.7.1.0
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: time-1.5.0.1 bytestring-0.10.6.0 base-4.6.0.1
+install-outcome: DependencyFailed time-1.5.0.1
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: InstallFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: InstallOk
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: InstallFailed
+docs-outcome: NotTried
+tests-outcome: NotTried
+
+package: deepseq-1.4.1.1
+os: osx
+arch: x86_64
+compiler: ghc-7.6.3
+client: cabal-install-1.22.6.0
+dependencies: base-4.6.0.1 array-0.4.0.1
+install-outcome: InstallFailed
+docs-outcome: NotTried
+tests-outcome: NotTried

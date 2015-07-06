@@ -1,0 +1,2 @@
+cabal-uninstall -any
+deepseq -any
