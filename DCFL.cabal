@@ -10,7 +10,7 @@ name:                DCFL
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.1.4.0
+version:             0.1.5.0
 
 -- A short (one-line) description of the package.
 synopsis:           Communication Free Learning-based constraint solver
@@ -57,5 +57,5 @@ library
   -- other-modules:       
   
   -- Other library packages from which modules are imported.
-  build-depends:       base ==4.6.*, random ==1.0.*, HUnit ==1.2.*, deepseq ==1.4.*
+  build-depends:       base >=4.6 && <= 5.0, random >=1.0, HUnit >=1.2, deepseq >=1.2, parallel >=3.0
   ghc-options:         -Wall

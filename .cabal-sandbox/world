@@ -1,2 +1,4 @@
-cabal-uninstall -any
+parallel -any
+random -any
+HUnit -any
 deepseq -any

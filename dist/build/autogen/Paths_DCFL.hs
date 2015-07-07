@@ -12,13 +12,14 @@ import Prelude
 catchIO :: IO a -> (Exception.IOException -> IO a) -> IO a
 catchIO = Exception.catch
 
+
 version :: Version
-version = Version [0,1,3,0] []
+version = Version {versionBranch = [0,1,5,0], versionTags = []}
 bindir, libdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/Users/dhaivat/dev/dcfl/.cabal-sandbox/bin"
-libdir     = "/Users/dhaivat/dev/dcfl/.cabal-sandbox/lib/x86_64-osx-ghc-7.6.3/DCFL-0.1.3.0"
-datadir    = "/Users/dhaivat/dev/dcfl/.cabal-sandbox/share/x86_64-osx-ghc-7.6.3/DCFL-0.1.3.0"
+libdir     = "/Users/dhaivat/dev/dcfl/.cabal-sandbox/lib/x86_64-osx-ghc-7.8.4/DCFL-0.1.5.0"
+datadir    = "/Users/dhaivat/dev/dcfl/.cabal-sandbox/share/x86_64-osx-ghc-7.8.4/DCFL-0.1.5.0"
 libexecdir = "/Users/dhaivat/dev/dcfl/.cabal-sandbox/libexec"
 sysconfdir = "/Users/dhaivat/dev/dcfl/.cabal-sandbox/etc"
 
