@@ -278,13 +278,13 @@ updateMapF variables constraints index = do
 -- |Updates each variable in the variable set a number of times and does each
 -- variable's update in a separate thread.
 updateEachParallel :: Int -> [Variable] -> [ConstraintEl] -> IO [Variable]
-updateEachThreaded variables constraints = do
+updateEachParallel variables constraints = do
   m <- sequence $ map (updateMapF variables constraints) [0..(length variables)]
   -- evaluate the map in parallel
   let mp = m `using` parList rdeepseq in return mp
 
 updateEachTimesParallel :: Int -> [Variable] -> [ConstraintEl] -> Int -> IO [Variable]
-updateEachTimesThreaded variables constraints times
+updateEachTimesParallel variables constraints times
   | times == 0 = return variables
   | otherwise = do
     rvars <- updateEachThreaded variables constraints
@@ -294,7 +294,7 @@ updateEachTimesThreaded variables constraints times
 -- the solution to be parallelized, the program using DCFL must be compiled
 -- with GHC's '-threaded' option.
 solveParallel :: Int -> [Variable] -> [ConstraintEl] -> IO Solved
-solveThreaded vars constraints = do
+solveParallel vars constraints = do
   rvars <- updateEachTimesThreaded vars constraints 10
   if checkSolved rvars
     then return $ Solved rvars 0
