@@ -2,4 +2,4 @@
 *.o
 *.config
 dist/
-.cabal_sandbox/*
+.cabal-sandbox/*
