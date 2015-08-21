@@ -2,9 +2,12 @@
   <head>
   <link href="foundation/css/foundation.min.css" rel="stylesheet"></link>
   <link href="index.css" rel="stylesheet"></link>
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/default.min.css">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
-
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/default.min.css">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
   <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,900,100,300' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600,700' rel='stylesheet' type='text/css'>
@@ -34,7 +37,7 @@
         
         <div class="block">
         <h3>Background</h3>
-        <p>dcfl uses the Communication Free Learning algorithm presented by KR Duffy, et al. in <a href="http://arxiv.org/pdf/1103.3240.pdf"><i>Decentralized Constraint Satisfaction</i></a>. The primary benefit of the algorithm over previous approaches is that its distributed nature, making it a prime candidate for parallelization.</p>
+        <p>dcfl uses the Communication Free Learning algorithm presented by KR Duffy, et al. in <a href="http://arxiv.org/pdf/1103.3240.pdf"><i>Decentralized Constraint Satisfaction</i></a>. The primary benefit of the algorithm over previous approaches is its distributed nature, making it a prime candidate for parallelization.</p>
 
         </div>
 
@@ -48,11 +51,6 @@ import Data.List
 -- creates the set of variables; n colors possible
 colorVariables n = 
   map (\x -> Variable [0..n-1] 0 (initDistribution n)) $ [0..n-1]
-
--- create a set of m variables that can take on values between 0 and n-1
--- inclusive.
-finiteVariables m n = 
-  map(\x -> Variable [0..n-1] 0 (initDistribution n)) $ [0..m-1]
 
 -- constraint function for two different nodes in the network
 -- specifies that their colors should not be equal
@@ -68,9 +66,17 @@ colorConstraints n =
 main = do
   rsolved <- solveThreaded 2 vars consts
   putStrLn $ show $ getValues $ variables rsolved
-  where vars = finiteVariables 5 5
+  where vars = colorVariables 5
         consts = colorConstraints 5</pre>
+
+        <p>Although the <a href="http://hackage.haskell.org/package/DCFL">Hackage documentation</a> describes the types this example uses, it is worthwhile to look into portions of this code. To describe the constraint satisfaction problem (CSP), we have a set of variables and a set of constraints on the variables. Each variable can take on a list of values and a holds a certain value at a given time. The value the variable holds is described as the index in the list of values it can possibly taken on. A variable also has an associated distribution, which is used internally by the algorithm to solve the CSP. So, when we declare a variable, we can do it as: </p>
+
+        <pre>Variable listOfValues currentValueIndex distribution</pre>
+        <p>We define <code class="inline">colorVariables</code> as a function which lets us create a set of variables which can each take on values between \(0\) and \(n-1\) for a given parameter \(n\). The only other concept from dcfl used in the definition is <code class="inline">initDistribution</code>, which initializes a flat distribution over \(n\) values.</p>
+
+        
         </div>
+
       </div>
     </div>
   </div>
