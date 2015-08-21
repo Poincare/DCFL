@@ -48,34 +48,38 @@
 import Data.DCFL
 import Data.List
 
--- creates the set of variables; n colors possible
 colorVariables n = 
-  map (\x -> Variable [0..n-1] 0 (initDistribution n)) $ [0..n-1]
+        map (\x -> Variable [0..n-1] 0 $ initDistribution n) [0..n-1]
 
--- constraint function for two different nodes in the network
--- specifies that their colors should not be equal
-colorConstraint :: Int -> Int -> [Int] -> Bool
-colorConstraint node1 node2 values = (values !! node1) /= (values !! node2)
+colorConstraint:: Int -> Int -> [Int] -> Bool
+colorConstraint n1 n2 vars = (vars !! n1) /= (vars !! n2)
 
--- construct the constraint set by currying
-colorConstraints :: Int -> [ConstraintEl]
 colorConstraints n = 
-  [ConstraintEl [a, b] $ 
-  colorConstraint a b | a <- [0..n-1], b <- [0..n-1], a /= b]
-  
-main = do
-  rsolved <- solveThreaded 2 vars consts
-  putStrLn $ show $ getValues $ variables rsolved
-  where vars = colorVariables 5
-        consts = colorConstraints 5</pre>
+  [ConstraintEl [a, b] $ colorConstraint a b | 
+    a <- [0..n-1], b <- [0..n-1], a /= b]
 
+main = do
+  rsolved <- solveParallel (colorVariables 5) (colorConstraints 5)
+  putStrLn $ show $ getValues $ variables rsolved
+</pre>
         <p>Although the <a href="http://hackage.haskell.org/package/DCFL">Hackage documentation</a> describes the types this example uses, it is worthwhile to look into portions of this code. To describe the constraint satisfaction problem (CSP), we have a set of variables and a set of constraints on the variables. Each variable can take on a list of values and a holds a certain value at a given time. The value the variable holds is described as the index in the list of values it can possibly taken on. A variable also has an associated distribution, which is used internally by the algorithm to solve the CSP. So, when we declare a variable, we can do it as: </p>
 
         <pre>Variable listOfValues currentValueIndex distribution</pre>
         <p>We define <code class="inline">colorVariables</code> as a function which lets us create a set of variables which can each take on values between \(0\) and \(n-1\) for a given parameter \(n\). The only other concept from dcfl used in the definition is <code class="inline">initDistribution</code>, which initializes a flat distribution over \(n\) values.</p>
 
-        
+		<p>We also define <code class="inline">colorConstraint</code>, which takes indices of two variables and a list of variables and makes sure that they aren't the same value. We then make a list of these constraints for every pair of variables we are considering and call the list <code class="inline">colorConstraints</code>. In the context of the problem we are considering, the constraints make sure that no two nodes in our complete graph have the same color, i.e. no two routers are on the same channel.</p>
+
+		<p>Finally, we pass on this information to <code class="inline">solveParallel</code> to solve the constraint satisfaction problem. Note that in order for the parallelization to occur, we have to the use the <code class="inline">-threaded</code> option when using GHC.</p>        
         </div>
+	
+	<div class="block">
+		<h3>Important Considerations</h3>
+		<h6>Why don't we write one very complicated constraint that makes sure all of the variables have different values?</h6>
+		<p>Having decoupled constraints generally (i.e. to a certain extent) helps the efficiency of Communication Free Learning since it can alter the values of some sets of variables independently of others.</p>
+
+		<h6>What happens if the constraint set does not have a solution?</h6>
+		<p>Due to the nature of the algorithm, this means that the <code class="inline">solveParallel</code> will continue forever. It is possible to hook into <code class="inline">solveParallel</code> in order to count the number of iterations passed before "giving up."</p>
+	</div>
 
       </div>
     </div>
