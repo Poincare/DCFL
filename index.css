@@ -3,6 +3,7 @@ body {
   padding: 0px;
   margin: 0;
   outline: none;
+  background-color: #E8EAEF;
 }
 
 #logo {
@@ -58,7 +59,7 @@ h1 {
 .nav {
   padding-top: 20px;
   text-align: left;
-  background-color: #225378;
+  background-color: #263248;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -81,11 +82,14 @@ h1 {
   letter-spacing: 1px;
   padding: 10px;
   border: none;
-  background-color: #F3FFE2;
+  background-color: #7E8AA2;
+  display: inline-block;
+  width: 100%;
+  border-radius: 5px;
 }
 
 .nav li {
-  margin-bottom: 25px;
+  margin-bottom: 10px;
 }
 
 .nav a:hover {
@@ -96,8 +100,8 @@ h1 {
 
 .blocks {
   padding-top: 20px;
-  padding-left: 20px;
-  padding-right: 30px;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 
 pre {
