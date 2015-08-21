@@ -1,0 +1,78 @@
+<html>
+  <head>
+  <link href="foundation/css/foundation.min.css" rel="stylesheet"></link>
+  <link href="index.css" rel="stylesheet"></link>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
+
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,900,100,300' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+  <div class="columns small-centered small-12 text-center" id="wrapper">
+
+    <div class="wrapper_columns columns small-12 text-left">
+      <div class="nav large-2 columns">
+      <div id="logo">
+        <h1>dcfl</h1>
+      </div>
+
+      <ul>
+        <li><a href="https://github.com/Poincare/Panthera">Github</a></li>
+        <li><a href="https://github.com/Poincare/Panthera/raw/master/paper/paper.pdf">Technical Paper</a></li>
+        <li><a href="https://github.com/Poincare/Panthera/raw/master/poster/assets/box-plot-data.pdf">Data</a></li>
+      </ul>
+      </div>
+
+      <div class="blocks large-10 columns">
+        <div class="block">
+          <h3>dcfl is a parallelized constraint solving library for Haskell.</h3>
+
+        </div>
+        
+        <div class="block">
+        <h3>Background</h3>
+        <p>dcfl uses the Communication Free Learning algorithm presented by KR Duffy, et al. in <a href="http://arxiv.org/pdf/1103.3240.pdf"><i>Decentralized Constraint Satisfaction</i></a>. The primary benefit of the algorithm over previous approaches is that its distributed nature, making it a prime candidate for parallelization.</p>
+
+        </div>
+
+        <div class="block">
+        <h3>Using dcfl: Router Example</h3>
+        <p>KR Duffy, et al. provide a simple example problem of constraint satisfaction which we can solve with dcfl. Suppose we have five routers within an area and each of them has to be on a different channel within a spectrum and we assume that we have been given five different channels. This is essentially a graph coloring problem on a complete graph. To solve it using dcfl, we can use the following code:
+<pre>
+import Data.DCFL
+import Data.List
+
+-- creates the set of variables; n colors possible
+colorVariables n = 
+  map (\x -> Variable [0..n-1] 0 (initDistribution n)) $ [0..n-1]
+
+-- create a set of m variables that can take on values between 0 and n-1
+-- inclusive.
+finiteVariables m n = 
+  map(\x -> Variable [0..n-1] 0 (initDistribution n)) $ [0..m-1]
+
+-- constraint function for two different nodes in the network
+-- specifies that their colors should not be equal
+colorConstraint :: Int -> Int -> [Int] -> Bool
+colorConstraint node1 node2 values = (values !! node1) /= (values !! node2)
+
+-- construct the constraint set by currying
+colorConstraints :: Int -> [ConstraintEl]
+colorConstraints n = 
+  [ConstraintEl [a, b] $ 
+  colorConstraint a b | a <- [0..n-1], b <- [0..n-1], a /= b]
+  
+main = do
+  rsolved <- solveThreaded 2 vars consts
+  putStrLn $ show $ getValues $ variables rsolved
+  where vars = finiteVariables 5 5
+        consts = colorConstraints 5</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  </body>
+</html>
