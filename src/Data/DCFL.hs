@@ -6,11 +6,11 @@
 -- Maintain a probability distribution for the variable
 -- Update it based on whether or not constraints are satisfied
 module Data.DCFL (
-  Distribution,
-  Values,
-  Variable,
-  ConstraintEl,
-  Solved,
+  Distribution(..),
+  Values(..),
+  Variable(..),
+  ConstraintEl(..),
+  Solved(..),
 
   -- * Distributions
   initDistribution,
@@ -32,7 +32,8 @@ module Data.DCFL (
   update,
   updateEach,
   updateEachTimes,
-
+  getValues,
+  
   -- ** Parallelized
   solveParallel,
   updateEachTimesParallel,
