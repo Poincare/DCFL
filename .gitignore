@@ -3,3 +3,4 @@
 *.config
 dist/
 .cabal-sandbox/*
+.cabal-sandbox/
