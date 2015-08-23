@@ -1,4 +1,0 @@
-parallel -any
-random -any
-HUnit -any
-deepseq -any
