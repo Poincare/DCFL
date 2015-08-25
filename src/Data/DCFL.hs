@@ -47,7 +47,7 @@ import Control.DeepSeq
 data Distribution = Distribution {probab::[Double]} deriving Show
 
 instance NFData Distribution where
-  rnf (Distribution probab) = rnf probab
+  rnf (Distribution p) = rnf p
 
 -- |The integer values a 'Variable' can take on.
 data Values = Values [Integer] deriving Show
@@ -58,7 +58,7 @@ data Variable = Variable {possible::[Int], valueIndex::Int,
   distr::Distribution} deriving (Show)
 
 instance NFData Variable where
-  rnf (Variable possible valueIndex distr) = rnf (possible, valueIndex, distr)
+  rnf (Variable p v d) = rnf (p, v, d)
 
 -- |Each constraint function ([Int] -> Bool) is associated with a certain set of
 -- variables. 'ConstraintEl' represents this relationship for a given constraint
@@ -70,8 +70,8 @@ data ConstraintEl = ConstraintEl {variableIndices :: [Int],
 data Solved = Solved {variables :: [Variable], iterationCount :: Int}
 
 instance Show ConstraintEl where
-  show (ConstraintEl variableIndices _) = 
-    "Constraint " ++ (show variableIndices)
+  show (ConstraintEl v _) = 
+    "Constraint " ++ (show v)
 
 -- |Returns the number of finite values that a `Distribution` is over.
 width :: Distribution -> Int
@@ -79,7 +79,8 @@ width (Distribution p) = fromIntegral $ length p
 
 -- |Constant, as defined in the research paper "Decentralized Constraint Satisfaction"
 --  Duffy, et al.
-b = 0.1 :: Double
+b :: Double
+b = 0.1 
 
 -- |Internally called function.
 oneIfEqual :: (Eq a) => a -> a -> Int
@@ -98,8 +99,8 @@ replicateDouble a f
 --  'Distribution' [0.2, 0.2, 0.2, 0.2, 0.2].
 -- @
 initDistribution :: Int -> Distribution
-initDistribution width = Distribution $ 
-  replicateDouble width (1.0/(fromIntegral width))
+initDistribution w = Distribution $ 
+  replicateDouble w (1.0/(fromIntegral w))
 
 -- |Adjust probability for the value which has just failed a constraint.
 failureCurrProb :: Int -> Double -> Double
@@ -107,26 +108,25 @@ failureCurrProb _ currValue = (1.0-b)*currValue
 
 -- |Adjust probability for values other than the one that just failed a constraint.
 failureOtherProb :: Int -> Double -> Double 
-failureOtherProb width currValue = ((1.0-b)*currValue) + (b/((fromIntegral $ width)-1.0))
+failureOtherProb w currValue = ((1.0-b)*currValue) + (b/((fromIntegral $ w)-1.0))
 
 -- |Adjust probability of taking on a value for a certain 'Variable' given that
 -- a constraint was just failed.
 failureProb :: Int -> Int -> Double -> Int -> Double
-failureProb width valueIndex currValue currIndex
-  | valueIndex == currIndex = failureCurrProb width currValue
-  | otherwise = failureOtherProb width currValue
+failureProb w v currValue currIndex
+  | v == currIndex = failureCurrProb w currValue
+  | otherwise = failureOtherProb w currValue
 
 -- |Given a distribution, update it based on the value of success. 
 -- If successful, then set the probability of the current value to 1.0 and the
 -- probability for every other value to 0.0. 
 -- Otherwise, update it with failureProb.
 updateProb :: Distribution -> Int -> Bool -> Distribution
-updateProb dist@(Distribution p) valueIndex success
+updateProb dist@(Distribution p) v success
   -- if successful, we update the distribution
   | success = Distribution $ 
-    map (\x -> fromIntegral $ oneIfEqual (snd x) valueIndex) $ zip p [0..]
-  | otherwise = Distribution $ map (\x -> 
-    failureProb (width dist) valueIndex (fst x) (snd x)) $ zip p [0..]
+    map (\x -> fromIntegral $ oneIfEqual (snd x) v) $ zip p [0..]
+  | otherwise = Distribution $ zipWith (failureProb (width dist) v) p [0..]
 
 -- |Same as 'updateProb', but rather than returning a 'Distribution', this function
 -- returns a 'Variable'.
@@ -143,13 +143,13 @@ cummDistributionIter dist@(Distribution p) ind curr
 
 -- |Creates a cummulative 'Distribution' out of a given 'Distribution'.
 cummDistribution :: Distribution -> Distribution
-cummDistribution dist@(Distribution p) = Distribution $ cummDistributionIter dist 0 0
+cummDistribution dist@(Distribution _) = Distribution $ cummDistributionIter dist 0 0
 
 -- |Given a cummulative 'Distribution', this function returns the where a random
 -- value should be "placed" within the 'Distribution'.
 getValueIndex :: Distribution -> Double -> Int
 getValueIndex (Distribution p) randValue = 
-  length $ takeWhile (\x -> randValue > (fst x)) $ zip p [0..]
+  length $ takeWhile (\x -> randValue > (fst x)) $ zip p [0 :: Int ..]
 
 -- |Returns a single random number between 0.0 and 1.0.
 randomNum :: IO Double
@@ -159,14 +159,14 @@ randomNum = do
 
 -- |Randomize the value of a 'Variable'.
 randomizeVariable :: Variable -> IO Variable
-randomizeVariable var@(Variable p v dist) = do
+randomizeVariable (Variable p _ dist) = do
   randVal <- randomNum
   let newValIndex = getValueIndex (cummDistribution dist) randVal in
     return $ Variable p newValIndex dist
 
 -- |Evaluate one 'constraint' with a list of 'values'.
 evalConstraint :: ([Int] -> Bool) -> [Int] -> Bool
-evalConstraint constraint values = constraint values
+evalConstraint c values = c values
 
 -- |Evaluate the set constraint functions 'constraints' with a list of 'values'.
 evalConstraints :: [[Int] -> Bool] -> [Int] -> Bool
@@ -183,35 +183,35 @@ applyAt f index list =
 -- of 'Variable's.
 getConstraintsFor :: Int -> [ConstraintEl] -> [[Int] -> Bool]
 getConstraintsFor n constraintSet = 
-  [constraint | ConstraintEl [a, b] constraint <- constraintSet, ((a == n) || (b == n))]
+  [constraint | ConstraintEl [c, d] constraint <- constraintSet, ((c == n) || (d == n))]
 
 -- |Get the constraint functions out of a list of 'ConstraintEl's.
 justConstraints :: [ConstraintEl] -> [[Int] -> Bool]
 justConstraints = map constraint
 
 -- |Get a list of values from a list of 'Variable's.
-getValues variables = map (\(Variable _ val _) -> val) variables
+getValues :: [Variable] ->[Int]
+getValues vs = map (\(Variable _ val _) -> val) vs
 
 -- |Randomizes the value of a single 'Variable' in a list of 'Variable'.
 randomizeSingle::Int -> [Variable] -> [IO Variable]
-randomizeSingle variableIndex variables = 
+randomizeSingle variableIndex vs = 
   map (\x -> if (snd x) == variableIndex then randomizeVariable $ fst x
-                                         else return $ (fst x)) $ zip variables [0..]
+                                         else return $ (fst x)) $ zip vs [0..]
 
 -- | Randomize all the variables in a list.
 randomize :: [Variable] -> [IO Variable]
-randomize variables = map randomizeVariable variables
+randomize = map randomizeVariable 
 
 -- |Print variables.
 printVariables :: [Variable] -> [IO ()]
-printVariables variables = do
-  map (putStrLn . show) variables
+printVariables = map (putStrLn . show) 
 
 -- |Either randomize or let a variable stay, depending on what the constraint
 -- check tells us.
 update :: Int -> [Variable] -> [ConstraintEl] -> IO [Variable]
-update variableIndex variables constraintSet = do
-  rvariables <- sequence $ randomizeSingle variableIndex variables
+update variableIndex vs constraintSet = do
+  rvariables <- sequence $ randomizeSingle variableIndex vs
   let values = getValues rvariables
       constraints = getConstraintsFor variableIndex constraintSet 
       constraintRes = evalConstraints constraints values
@@ -224,31 +224,31 @@ update variableIndex variables constraintSet = do
 -- | Update each variable in the indices list once. Internal function used
 -- by updateEach.
 updateEach' :: [Variable] -> [ConstraintEl] -> [Int] -> IO [Variable]
-updateEach' variables constraintSet (i:indices)
+-- what does this do with an empty list?
+updateEach' vs constraintSet (i:indices)
   | length indices > 0 = do
-    vars <- update i variables constraintSet
+    vars <- update i vs constraintSet
     updateEach' vars constraintSet indices
-  | otherwise  = do
-    return variables
+  | otherwise  = return vs
 
 -- |Update each variable in the variable set based on the constraint set
 -- value.
 updateEach :: [Variable] -> [ConstraintEl] -> IO [Variable]
-updateEach variables constraintSet = 
-  updateEach' variables constraintSet [0 .. (length variables)]
+updateEach vs constraintSet = 
+  updateEach' vs constraintSet [0 .. (length vs)]
 
 -- |Update the variable set 'n' number of times.
 updateEachTimes :: [Variable] -> [ConstraintEl] -> Int -> IO [Variable]
-updateEachTimes variables constraintSet n
+updateEachTimes vs constraintSet n
   | n > 0 = do
-    rvars <- updateEach variables constraintSet
+    rvars <- updateEach vs constraintSet
     updateEachTimes rvars constraintSet (n - 1)
-  | otherwise = return variables
+  | otherwise = return vs
 
 -- |Checks if every probability in the distribution is either 0 or 1. If it is,
 -- then, all constraints have been satisfied.
 checkDistrSolved :: Distribution -> Bool
-checkDistrSolved (Distribution probab) = all (\x -> x == 0.0 || x == 1.0) probab
+checkDistrSolved (Distribution p) = all (\x -> x == 0.0 || x == 1.0) p
 
 -- |Check if the constraints have been solved by looking at the distributions
 -- of each 'Variable'.
@@ -268,28 +268,28 @@ solve vars constraints = do
     then return $ Solved rvars 0
     else do 
       solved <- solve rvars constraints
-      return $ Solved (variables solved) ((iterationCount solved) + 1)
-
+      return $ Solved (variables solved) (iterationCount solved + 1)
 
 updateMapF :: [Variable] -> [ConstraintEl] -> Int -> IO Variable
-updateMapF variables constraints index = do
-  rvars <- update index variables constraints
+updateMapF vs constraints index = do
+  rvars <- update index vs constraints
   return (rvars !! index)
 
 -- |Updates each variable in the variable set a number of times and does each
 -- variable's update in a separate thread.
 updateEachParallel :: [Variable] -> [ConstraintEl] -> IO [Variable]
-updateEachParallel variables constraints = do
-  m <- sequence $ map (updateMapF variables constraints) [0..(length variables)]
+updateEachParallel vs constraints = do
+  m <- sequence $ map (updateMapF vs constraints) [0..(length vs)]
   -- evaluate the map in parallel
   let mp = m `using` parList rdeepseq in return mp
 
 updateEachTimesParallel :: [Variable] -> [ConstraintEl] -> Int -> IO [Variable]
-updateEachTimesParallel variables constraints times
-  | times == 0 = return variables
+updateEachTimesParallel vs constraints times
+  | times == 0 = return vs
   | otherwise = do
-    rvars <- updateEachParallel variables constraints
-    updateEachTimesParallel variables constraints (times - 1)
+    -- this does not appear to be used...
+    rvars <- updateEachParallel vs constraints
+    updateEachTimesParallel vs constraints (times - 1)
 
 -- |Solve the constraint set in parallel using Haskell threads. In order for
 -- the solution to be parallelized, the program using DCFL must be compiled
@@ -301,4 +301,4 @@ solveParallel vars constraints = do
     then return $ Solved rvars 0
     else do
       solved <- solve rvars constraints
-      return $ Solved (variables solved) ((iterationCount solved) + 1)
+      return $ Solved (variables solved) (iterationCount solved + 1)
