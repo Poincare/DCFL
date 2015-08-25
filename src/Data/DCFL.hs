@@ -88,11 +88,6 @@ oneIfEqual x val
   | val == x = 1
   | otherwise = 0
 
-replicateDouble :: Int -> Double -> [Double]
-replicateDouble a f
-  | a == 0 = []
-  | otherwise = (f :) $ replicate (a - 1) f
-
 -- |Initialize a distribution with each possible value having the same probability.
 -- For example, initDistribution 5 gives 
 -- @
@@ -100,7 +95,7 @@ replicateDouble a f
 -- @
 initDistribution :: Int -> Distribution
 initDistribution w = Distribution $ 
-  replicateDouble w (1.0/fromIntegral w)
+  replicate w (1.0/fromIntegral w)
 
 -- |Adjust probability for the value which has just failed a constraint.
 failureCurrProb :: Int -> Double -> Double
@@ -162,14 +157,10 @@ randomizeVariable (Variable p _ dist) = do
   let newValIndex = getValueIndex (cummDistribution dist) randVal in
     return $ Variable p newValIndex dist
 
--- |Evaluate one 'constraint' with a list of 'values'.
-evalConstraint :: ([Int] -> Bool) -> [Int] -> Bool
-evalConstraint c = c 
-
 -- |Evaluate the set constraint functions 'constraints' with a list of 'values'.
 evalConstraints :: [[Int] -> Bool] -> [Int] -> Bool
 evalConstraints constraints values = 
-  all (`evalConstraint` values) constraints
+  all ($ values) constraints
 
 -- |Apply a function at only one index of a list. Internal function.
 applyAt :: (a -> a) -> Int -> [a] -> [a]
